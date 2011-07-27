@@ -1,0 +1,7 @@
+# Exclude NetBean project folder
+nbproject/**/*
+nbproject/*
+
+# Exclude RubyMine project folder
+/**/.idea/*
+.idea/*

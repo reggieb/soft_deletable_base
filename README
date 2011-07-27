@@ -9,10 +9,14 @@ been deleted by mistake.
 
 Requirements
 ------------
-The model object needs to have a 'deleted_at' datetime field, that on
-delete will be set to the current time
+This plugin is designed for Rails 3. The syntax of the scope options
+will not work with Rails 2.
 
-== Usage
+The model object needs to have a 'deleted_at' datetime field, that on
+delete will be set to the current time.
+
+Usage
+-----
 Change the class definition so that the class inherits from SoftDeletableBase
 rather than ActiveRecord::Base. So
 
@@ -27,21 +31,37 @@ Functionality
 Adds 'extant' and 'deleted' scopes to the model. For example, if added
 to a Thing model, would allow you to do the following:
 
-     Thing.extant        ---- Finds all things that aren't deleted
+     thing.soft_delete   ---- Soft deletes an instance of thing
+
+     Thing.extant        ---- Finds all things that are not deleted
      Thing.deleted.count ---- Counts how many things have been deleted
+
      Thing.extant.find(
        :all,
        :conditions => ["colour = ?", 'red']
      )                   ---- Finds all extant things that have colour set as red
-     Thing.extant.where(
-       :colour => 'red'
-     )                   ---- As above using where
+
+     Thing.extant.where(:colour => 'red')      ---- As above using where
 
 
 Also if Box has_many things
 
      box.things.deleted ---- Finds all the deleted things in the box
 
+Note that Thing's delete instance method is not effected by this functionality
+so:
 
+    thing.soft_delete  --- alters the thing instance to be flagged as deleted
+    thing.delete       --- deletes the thing from the database.
+
+If you want delete actions to soft_delete, overwrite delete:
+
+  class Thing < SoftDeletableBase
+
+    def delete
+      soft_delete
+    end
+
+  end
 
 Copyright (c) 2010 Rob Nichols, released under the MIT license

@@ -1,0 +1,47 @@
+Soft Deletable Base
+===================
+
+Provides mechanism for soft delete functionality when a model inherits
+from this class. Soft delete means that on delete, an object
+is flagged as deleted rather than being removed from the
+database. This makes it far easier to recover objects that have
+been deleted by mistake.
+
+Requirements
+------------
+The model object needs to have a 'deleted_at' datetime field, that on
+delete will be set to the current time
+
+== Usage
+Change the class definition so that the class inherits from SoftDeletableBase
+rather than ActiveRecord::Base. So
+
+  class Thing < ActiveRecord::Base
+
+will become
+
+  class Thing < SoftDeletableBase
+
+Functionality
+-------------
+Adds 'extant' and 'deleted' scopes to the model. For example, if added
+to a Thing model, would allow you to do the following:
+
+     Thing.extant        ---- Finds all things that aren't deleted
+     Thing.deleted.count ---- Counts how many things have been deleted
+     Thing.extant.find(
+       :all,
+       :conditions => ["colour = ?", 'red']
+     )                   ---- Finds all extant things that have colour set as red
+     Thing.extant.where(
+       :colour => 'red'
+     )                   ---- As above using where
+
+
+Also if Box has_many things
+
+     box.things.deleted ---- Finds all the deleted things in the box
+
+
+
+Copyright (c) 2010 Rob Nichols, released under the MIT license
